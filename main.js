@@ -1,6 +1,6 @@
 // Send Handshake event
 $("#sw-handshake").click(function() {
-  steem_keychain.requestHandshake(function() {
+  hive_keychain.requestHandshake(function() {
     console.log("Handshake received!");
   });
 });
@@ -9,7 +9,7 @@ $("#sw-handshake").click(function() {
 
 // Send decryption request
 $("#send_decode").click(function() {
-  steem_keychain.requestVerifyKey(
+  hive_keychain.requestVerifyKey(
     $("#decode_user").val(),
     $("#decode_message").val(),
     $("#decode_method option:selected").text(),
@@ -20,9 +20,22 @@ $("#send_decode").click(function() {
   );
 });
 
+$("#send_encode").click(() => {
+  hive_keychain.requestEncodeMessage(
+    $("#encode_user").val(),
+    $("#encode_receiver").val(),
+    $("#encode_message").val(),
+    $("#encode_method option:selected").text(),
+    function(response) {
+      console.log("main js response - verify key");
+      console.log(response);
+    }
+  );
+});
+
 // Send post request
 $("#send_post").click(function() {
-  steem_keychain.requestPost(
+  hive_keychain.requestPost(
     $("#post_username").val(),
     $("#post_title").val(),
     $("#post_body").val(),
@@ -40,7 +53,7 @@ $("#send_post").click(function() {
 
 // Send vote request
 $("#send_vote").click(function() {
-  steem_keychain.requestVote(
+  hive_keychain.requestVote(
     $("#vote_username").val(),
     $("#vote_perm").val(),
     $("#vote_author").val(),
@@ -55,7 +68,7 @@ $("#send_vote").click(function() {
 // Send Custom JSON request
 $("#send_custom").click(function() {
   console.log("click");
-  steem_keychain.requestCustomJson(
+  hive_keychain.requestCustomJson(
     $("#custom_username").val(),
     $("#custom_id").val(),
     $("#custom_method option:selected").text(),
@@ -72,7 +85,7 @@ $("#send_custom").click(function() {
 // Send transfer request
 $("#send_tra").click(function() {
   console.log("transfer");
-  steem_keychain.requestTransfer(
+  hive_keychain.requestTransfer(
     $("#transfer_username").val(),
     $("#transfer_to").val(),
     $("#transfer_val").val(),
@@ -88,7 +101,7 @@ $("#send_tra").click(function() {
 
 // Send tokens request
 $("#sendTokens").click(function() {
-  steem_keychain.requestSendToken(
+  hive_keychain.requestSendToken(
     $("#tokens_username").val(),
     $("#tokens_to").val(),
     $("#tokens_qt").val(),
@@ -103,7 +116,7 @@ $("#sendTokens").click(function() {
 
 // Send delegation
 $("#send_delegation").click(function() {
-  steem_keychain.requestDelegation(
+  hive_keychain.requestDelegation(
     $("#delegation_username").val(),
     $("#delegation_delegatee").val(),
     $("#delegation_sp").val(),
@@ -116,19 +129,35 @@ $("#send_delegation").click(function() {
 });
 
 $("#send_signature").click(function() {
-  steem_keychain.requestSignBuffer(
+  hive_keychain.requestSignBuffer(
     $("#sign_username").val(),
     $("#sign_message").val(),
     $("#sign_method option:selected").text(),
     function(response) {
       console.log("main js response - sign");
       console.log(response);
+    },
+    null,
+    $("#sign_message_title").val().length
+      ? $("#sign_message_title").val()
+      : null
+  );
+});
+
+$("#send_sign_tx").click(function() {
+  hive_keychain.requestSignTx(
+    $("#tx_username").val(),
+    JSON.parse($("#tx").val()),
+    $("#tx_type option:selected").text(),
+    function(response) {
+      console.log("main js response - tx");
+      console.log(response);
     }
   );
 });
 
 $("#send_addauth").click(function() {
-  steem_keychain.requestAddAccountAuthority(
+  hive_keychain.requestAddAccountAuthority(
     $("#addauth_username").val(),
     $("#addauth_authorized_username").val(),
     $("#addauth_role option:selected").text(),
@@ -141,7 +170,7 @@ $("#send_addauth").click(function() {
 });
 
 $("#send_removeauth").click(function() {
-  steem_keychain.requestRemoveAccountAuthority(
+  hive_keychain.requestRemoveAccountAuthority(
     $("#removeauth_username").val(),
     $("#removeauth_authorized_username").val(),
     $("#removeauth_role option:selected").text(),
@@ -154,7 +183,7 @@ $("#send_removeauth").click(function() {
 
 $("#send_addkey").click(function() {
   console.log("add key");
-  steem_keychain.requestAddKeyAuthority(
+  hive_keychain.requestAddKeyAuthority(
     $("#addkey_username").val(),
     $("#addkey_authorized_key").val(),
     $("#addkey_role option:selected").text(),
@@ -167,7 +196,7 @@ $("#send_addkey").click(function() {
 });
 
 $("#send_removekey").click(function() {
-  steem_keychain.requestRemoveKeyAuthority(
+  hive_keychain.requestRemoveKeyAuthority(
     $("#removekey_username").val(),
     $("#removekey_authorized_key").val(),
     $("#removekey_role option:selected").text(),
@@ -179,7 +208,7 @@ $("#send_removekey").click(function() {
 });
 
 $("#send_broadcast").click(function() {
-  steem_keychain.requestBroadcast(
+  hive_keychain.requestBroadcast(
     $("#broadcast_username").val(),
     $("#broadcast_operations").val(),
     $("#broadcast_method option:selected").text(),
@@ -191,7 +220,7 @@ $("#send_broadcast").click(function() {
 });
 
 $("#send_signed_call").click(function() {
-  steem_keychain.requestSignedCall(
+  hive_keychain.requestSignedCall(
     $("#signed_call_username").val(),
     $("#signed_call_method").val(),
     JSON.parse($("#signed_call_params").val()),
@@ -204,7 +233,7 @@ $("#send_signed_call").click(function() {
 });
 
 $("#send_witness_vote").click(function() {
-  steem_keychain.requestWitnessVote(
+  hive_keychain.requestWitnessVote(
     $("#witness_username").val(),
     $("#witness").val(),
     $("#vote_wit").is(":checked"),
@@ -215,8 +244,19 @@ $("#send_witness_vote").click(function() {
   );
 });
 
+$("#send_proxy").click(function() {
+  hive_keychain.requestProxy(
+    $("#proxy_username").val(),
+    $("#proxy").val() ? $("#proxy").val() : "",
+    function(response) {
+      console.log("main js response - proxy");
+      console.log(response);
+    }
+  );
+});
+
 $("#send_pu").click(function() {
-  steem_keychain.requestPowerUp(
+  hive_keychain.requestPowerUp(
     $("#pu_username").val(),
     $("#pu_recipient").val(),
     $("#pu_steem").val(),
@@ -228,7 +268,7 @@ $("#send_pu").click(function() {
 });
 
 $("#send_pd").click(function() {
-  steem_keychain.requestPowerDown(
+  hive_keychain.requestPowerDown(
     $("#pd_username").val(),
     $("#pd_sp").val(),
     function(response) {
@@ -239,7 +279,7 @@ $("#send_pd").click(function() {
 });
 
 $("#send_create_claimed").click(function() {
-  steem_keychain.requestCreateClaimedAccount(
+  hive_keychain.requestCreateClaimedAccount(
     $("#create_claimed_username").val(),
     $("#create_claimed_new_username").val(),
     $("#create_claimed_owner").val(),
@@ -254,7 +294,7 @@ $("#send_create_claimed").click(function() {
 });
 
 $("#send_cp").click(function() {
-  steem_keychain.requestCreateProposal(
+  hive_keychain.requestCreateProposal(
     $("#cp_username").val(),
     $("#cp_receiver").val(),
     $("#cp_subject").val(),
@@ -271,7 +311,7 @@ $("#send_cp").click(function() {
 });
 
 $("#send_rp").click(function() {
-  steem_keychain.requestRemoveProposal(
+  hive_keychain.requestRemoveProposal(
     $("#rp_username").val(),
     $("#rp_proposal_ids").val(),
     $("#cp_extensions").val(),
@@ -283,13 +323,24 @@ $("#send_rp").click(function() {
 });
 
 $("#send_vp").click(function() {
-  steem_keychain.requestUpdateProposalVote(
+  hive_keychain.requestUpdateProposalVote(
     $("#vp_username").val(),
     $("#vp_proposal_ids").val(),
     $("#vp_approve").is(":checked"),
     $("#vp_extensions").val(),
     function(response) {
       console.log("main js response - update proposal votes");
+      console.log(response);
+    }
+  );
+});
+
+$("#send_save").click(function() {
+  hive_keychain.requestAddAccount(
+    $("#save_username").val(),
+    JSON.parse($("#save_keys").val()),
+    function(response) {
+      console.log("main js response - account saved");
       console.log(response);
     }
   );
